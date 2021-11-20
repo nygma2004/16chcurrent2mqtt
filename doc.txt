@@ -1,0 +1,102 @@
+Type 1: 40A threading transformer
+
+
+
+Type 2: 80A threading transformer
+
+
+
+Type 3: 40A opening and closing transformer
+
+
+
+Type 4: 120A opening and closing transformer
+
+
+
+
+
+Parameters
+
+
+Power voltage: DC8~28V (with self-recovery insurance)
+
+
+Rated power consumption: 3W
+
+
+Ac current measurement error: Typical value ±2%50Hz, ±5% non-50hz
+
+
+Frequency measurement error: Typical value ± 2.5hz/frequency division coefficient
+
+
+AC current resolution: 0.04A (40A range)
+
+
+Data refresh frequency: >5Hz/ frequency division coefficient
+
+
+Communication interface: RS485 isolation band TVS protection
+
+
+Operating temperature: -20℃ ~ 50℃
+
+
+Working humidity: 5%~90% no condensation
+
+
+Operating frequency: [10Hz*5/ frequency division coefficient]~400Hz
+
+
+Communication baud rate: Default 9600, N, 8, 1
+
+
+Same network node: Maximum 32
+
+
+
+
+Modbus-RTU communication protocol
+
+
+Function code: 0x03, read multiple registers
+
+
+Example: 01 03 00 00 00 38 44 18
+
+
+Read 56 word data from device 01 address 00
+
+
+
+
+Function code: 0x06, write single register
+
+
+Example: 01 06 00 03 00 02 F8 OB
+
+
+Write data 0002H to device 01 address 03
+
+
+
+
+Function code: 0x10, write multiple registers
+
+
+Example: 01 10 00 03 00 01 02 00 02 27 A2
+
+
+Write data 0002H to device 01 address 03
+
+
+
+
+Matters needing attention
+
+
+1. Only operators with certain electrical knowledge can conduct wiring and other operations on the product. If there is any unknown use, please consult our company.
+
+
+2. Avoid using in high temperature, humidity and dust, and avoid direct sunlight.
