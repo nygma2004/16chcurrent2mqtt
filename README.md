@@ -47,7 +47,7 @@ G(GND)                                  GND
 
 I explain everything about this project in this video:
 
-[![Prototype](https://img.youtube.com/vi/Mz1dJGthIJk/0.jpg)](https://www.youtube.com/watch?v=Mz1dJGthIJk)
+[![Full review](https://img.youtube.com/vi/ZYC7fzFqOUs/0.jpg)](https://www.youtube.com/watch?v=ZYC7fzFqOUs)
 
 ## Current Reader Documentation
 
