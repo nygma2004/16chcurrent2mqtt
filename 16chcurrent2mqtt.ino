@@ -4,8 +4,14 @@
 
 // Libraries:
 // - FastLED by Daniel Garcia
+// - ModbusMaster by Doc Walker
+// - ArduinoOTA
+// - SoftwareSerial
 // Hardware:
-
+// - Wemos D1 mini
+// - RS485 to TTL converter: https://www.aliexpress.com/item/1005001621798947.html
+// - To power from mains: Hi-Link 5V power supply (https://www.aliexpress.com/item/1005001484531375.html), fuseholder and 1A fuse, and varistor
+// - 16 Channel current aquisition modbus unit: https://www.aliexpress.com/item/1005002090646451.html
 
 
 #include <SoftwareSerial.h>       // Leave the main serial line (USB) for debugging and flashing
@@ -277,6 +283,14 @@ void setup() {
   // Connect to Wifi
   Serial.print(F("Connecting to Wifi"));
   WiFi.mode(WIFI_STA);
+
+  #ifdef FIXEDIP
+  // Configures static IP address
+  if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
+    Serial.println("STA Failed to configure");
+  }
+  #endif
+  
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -294,6 +308,41 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.print(F("Signal [RSSI]: "));
   Serial.println(WiFi.RSSI());
+
+  // Port defaults to 8266
+  // ArduinoOTA.setPort(8266);
+
+  // Hostname defaults to esp8266-[ChipID]
+  byte mac[6];                     // the MAC address of your Wifi shield
+  WiFi.macAddress(mac);
+  char value[80];
+  sprintf(value,"%s-%02x%02x%02x",clientID,mac[2],mac[1],mac[0]);
+  ArduinoOTA.setHostname(value);
+
+  // No authentication by default
+  // ArduinoOTA.setPassword((const char *)"123");
+
+  ArduinoOTA.onStart([]() {
+    os_timer_disarm(&myTimer);
+    Serial.println("Start");
+  });
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nEnd");
+    os_timer_arm(&myTimer, 1000, true);
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+    os_timer_arm(&myTimer, 1000, true);
+  });
+  ArduinoOTA.begin();
 
   // Set up the Modbus line
   current.begin(SLAVE_ID , modbus);
@@ -319,37 +368,7 @@ void setup() {
     mqtt.setCallback(callback);
   }
 
-  // Port defaults to 8266
-  // ArduinoOTA.setPort(8266);
 
-  // Hostname defaults to esp8266-[ChipID]
-  byte mac[6];                     // the MAC address of your Wifi shield
-  WiFi.macAddress(mac);
-  char value[80];
-  sprintf(value,"%s-%02x%02x%02x",clientID,mac[2],mac[1],mac[0]);
-  ArduinoOTA.setHostname(value);
-
-  // No authentication by default
-  // ArduinoOTA.setPassword((const char *)"123");
-
-  ArduinoOTA.onStart([]() {
-    Serial.println("Start");
-  });
-  ArduinoOTA.onEnd([]() {
-    Serial.println("\nEnd");
-  });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-  });
-  ArduinoOTA.onError([](ota_error_t error) {
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-    else if (error == OTA_END_ERROR) Serial.println("End Failed");
-  });
-  ArduinoOTA.begin();
 
   modbus.begin(MODBUS_RATE);
   
