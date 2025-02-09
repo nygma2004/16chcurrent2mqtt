@@ -1,6 +1,8 @@
 # 16 Channel Current Meter to MQTT Gateway
 This sketch runs on an ESP8266 and reads data from 16 Channel Current Measurement Module over RS485 Modbus and publishes the data over MQTT. This module is available Aliexpress on the following link: https://www.aliexpress.com/item/1005002090646451.html
 
+**UPDATE - KNOWN ISSUES** if you have an issue that your ESP does not connect to the MQTT server, please scroll to the bottom to Known Issues.
+
 ![Setup](/img/20211120_181637.jpg)
 
 This sketch publishes the 16 channel current information and some auxillary data. This unit is supposed to measure frequency as well, but for some reason it does not work for me. So I excluded that from the sketch. There is no voltage measurement, therefore to calculate power consumption you need a separate device to measure the exact voltage.
@@ -97,3 +99,12 @@ Write data 0002H to device 01 address 03
 Matters needing attention
 1. Only operators with certain electrical knowledge can conduct wiring and other operations on the product. If there is any unknown use, please consult our company.
 2. Avoid using in high temperature, humidity and dust, and avoid direct sunlight.
+
+## Known Issues
+Apperantly there is an issue with the latest version of the ESP8266 board manager version and FastLED. The symptom is that the ESP cannot connect to the MQTT broker and get reset by the watchdog timer (WDT) all the time. I managed to install everything and compile a working ESP but downgrading FastLED to 3.3.3. These are my Arduino IDE settings, and at the moment everything is on the latest version, except FastLED.
+
+- Arduino IDE: 2.3.4
+- ESP 8266 board library: 3.1.2
+- FastLED: 3.3.3
+- EspSoftwareSerial: 8.1.0
+- Modbusmaster: 2.0.1
